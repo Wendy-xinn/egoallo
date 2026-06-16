@@ -768,7 +768,7 @@ def main(cfg: Config):
             fname = path.split(cfg.data_root)[-1].rstrip("/")
             name, ext = os.path.splitext(fname)
             out_path = f"{cfg.out_root}/neutral/{name}{ext}"
-            r_out_path = f"{cfg.out_root}/neutral/{name}_reflect{ext}"
+            r_out_path = f"{cfg.out_root}/neutral/{name}_reflect{ext}"  # 镜像数据增强
             process_seq(
                 path,
                 out_path,

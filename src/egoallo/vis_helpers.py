@@ -1,7 +1,9 @@
+import io
 import time
 from pathlib import Path
 from typing import Callable, TypedDict
 
+import imageio.v3 as iio
 import numpy as np
 import numpy.typing as npt
 import torch
@@ -140,6 +142,7 @@ def visualize_traj_and_hand_detections(
     floor_z: float = 0.0,
     show_joints: bool = False,
     get_ego_video: Callable[[int, int, float], bytes] | None = None,
+    post_update_callbacks: tuple[Callable[[int], None], ...] = (),
 ) -> Callable[[], int]:
     """Chaotic mega-function for visualization. Returns a callback that should
     be called repeatedly in a loop."""
@@ -469,6 +472,9 @@ def visualize_traj_and_hand_detections(
         gui_framerate_options = server.gui.add_button_group(
             "FPS options", ("10", "20", "30", "60")
         )
+        gui_video_width = server.gui.add_number("Video width", initial_value=960)
+        gui_video_height = server.gui.add_number("Video height", initial_value=720)
+        gui_get_mp4_video = server.gui.add_button("Get MP4 Video")
 
     # Frame step buttons.
     @gui_next_frame.on_click
@@ -521,6 +527,80 @@ def visualize_traj_and_hand_detections(
 
         for ii, timestep_frame in enumerate(timestep_handles):
             timestep_frame.visible = t == ii
+
+        for callback in post_update_callbacks:
+            callback(t)
+
+    @gui_get_mp4_video.on_click
+    def _(event: viser.GuiEvent) -> None:
+        assert event.client is not None
+        client = event.client
+        start, end = gui_start_end.value
+        if end <= start:
+            notif = client.add_notification(
+                "Video export failed",
+                body="Start/end range is empty.",
+                loading=False,
+                with_close_button=True,
+            )
+            return
+
+        width = int(gui_video_width.value)
+        height = int(gui_video_height.value)
+        fps = float(gui_framerate.value)
+        old_playing = gui_playing.value
+        old_timestep = gui_timestep.value
+        gui_playing.value = False
+        notif = client.add_notification(
+            "Rendering MP4...",
+            body=f"0/{end - start + 1} frames",
+            loading=True,
+            with_close_button=False,
+        )
+        frames = []
+        try:
+            for count, t in enumerate(range(start, end + 1), start=1):
+                gui_timestep.value = t
+                do_update()
+                # Give the client a short chance to apply queued scene updates
+                # before asking it to render the current browser view.
+                time.sleep(0.02)
+                frame = client.get_render(
+                    height=height,
+                    width=width,
+                    transport_format="jpeg",
+                )
+                if frame.ndim == 3 and frame.shape[-1] == 4:
+                    frame = frame[..., :3]
+                frames.append(frame)
+                if count == 1 or count % 10 == 0 or t == end:
+                    notif.body = f"{count}/{end - start + 1} frames"
+
+            output = io.BytesIO()
+            iio.imwrite(
+                output,
+                frames,
+                fps=fps,
+                extension=".mp4",
+                codec="libx264",
+                pixelformat="yuv420p",
+                quality=None,
+                ffmpeg_params=["-crf", "23"],
+            )
+            notif.remove()
+            client.send_file_download("viser_capture.mp4", output.getvalue())
+        except Exception as exc:
+            notif.remove()
+            client.add_notification(
+                "Video export failed",
+                body=f"{type(exc).__name__}: {exc}",
+                loading=False,
+                with_close_button=True,
+            )
+        finally:
+            gui_timestep.value = old_timestep
+            gui_playing.value = old_playing
+            do_update()
 
     get_viser_file = server.gui.add_button("Get .viser file")
 
