@@ -1,0 +1,52 @@
+{
+  "recording": "recording_20210907_S04_S03_02",
+  "run_name": "together_v2",
+  "traj_length": 128,
+  "stride": 128,
+  "starts": [
+    0
+  ],
+  "num_windows": 1,
+  "num_ok": 1,
+  "means": {
+    "baseline_mpjpe_mean_m": 0.12175260484218597,
+    "baseline_pa_mpjpe_mean_m": 0.05650709196925163,
+    "baseline_root_l2_mean_m": 0.3260364532470703,
+    "delta_mpjpe_mean_m": -0.01864730566740036,
+    "delta_pa_mpjpe_mean_m": 3.725290298461914e-09,
+    "delta_root_l2_mean_m": 0.036856114864349365,
+    "ego_sensor_head_l2_mean_m": 0.09957432001829147,
+    "mpjpe_mean_m": 0.10310529917478561,
+    "pa_mpjpe_mean_m": 0.05650709569454193,
+    "reproj_joint_in_image_mean": 0.6736111111111112,
+    "reproj_vertex_in_image_mean": 0.7756521739130435,
+    "root_aligned_mpjpe_mean_m": 0.07017750293016434,
+    "root_l2_mean_m": 0.3628925681114197,
+    "root_z_mean_m": 0.34442299604415894
+  },
+  "windows": [
+    {
+      "start_index": 0,
+      "end_index": 128,
+      "video_name": "recording_20210907_S04_S03_02_000000_000128_together_v2",
+      "metrics_path": "/public/home/wenxin/egoallo/egoallo_egobody_trajectories/recording_20210907_S04_S03_02/gvhmr_exo/recording_20210907_S04_S03_02_000000_000128_together_v2_exo_world_optimized_reprojection_debug/metrics.json",
+      "status": "ok",
+      "root_l2_mean_m": 0.3628925681114197,
+      "root_z_mean_m": 0.34442299604415894,
+      "mpjpe_mean_m": 0.10310529917478561,
+      "root_aligned_mpjpe_mean_m": 0.07017750293016434,
+      "pa_mpjpe_mean_m": 0.05650709569454193,
+      "reproj_vertex_in_image_mean": 0.7756521739130435,
+      "reproj_joint_in_image_mean": 0.6736111111111112,
+      "baseline_root_l2_mean_m": 0.3260364532470703,
+      "baseline_mpjpe_mean_m": 0.12175260484218597,
+      "baseline_pa_mpjpe_mean_m": 0.05650709196925163,
+      "delta_root_l2_mean_m": 0.036856114864349365,
+      "delta_mpjpe_mean_m": -0.01864730566740036,
+      "delta_pa_mpjpe_mean_m": 3.725290298461914e-09,
+      "ego_sensor_head_l2_mean_m": 0.09957432001829147,
+      "ego_sensor_left_wrist_l2_mean_m": null,
+      "ego_sensor_right_wrist_l2_mean_m": null
+    }
+  ]
+}

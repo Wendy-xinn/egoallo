@@ -26,6 +26,85 @@ def _maybe_add_egoallo_src(path: Path) -> None:
         sys.path.insert(0, str(path))
 
 
+def _make_csv_hand_side_detection(
+    data: np.lib.npyio.NpzFile,
+    side: str,
+    start_index: int,
+    length: int,
+    device: torch.device,
+    confidence: float,
+    flip_normal: bool,
+):
+    from egoallo.hand_detection_structs import AriaHandWristPoseWrtWorld
+
+    available_key = f"{side}_hand_available"
+    wrist_key = f"{side}_hand_wrist_position"
+    palm_key = f"{side}_hand_palm_position"
+    normal_key = f"{side}_hand_palm_normal"
+    required = [available_key, wrist_key, palm_key, normal_key]
+    missing = [key for key in required if key not in data.files]
+    if missing:
+        raise KeyError(
+            f"Converted input is missing CSV hand fields {missing}. "
+            "Re-run convert_egobody_to_egoallo.py with the updated script."
+        )
+
+    sl = slice(start_index, start_index + length)
+    available = np.asarray(data[available_key][sl], dtype=bool)
+    finite = (
+        np.isfinite(data[wrist_key][sl]).all(axis=1)
+        & np.isfinite(data[palm_key][sl]).all(axis=1)
+        & np.isfinite(data[normal_key][sl]).all(axis=1)
+    )
+    valid = available & finite
+    indices = np.flatnonzero(valid).astype(np.int64)
+    if len(indices) == 0:
+        return None
+
+    normals = np.asarray(data[normal_key][sl][indices], dtype=np.float32)
+    if flip_normal:
+        normals = -normals
+
+    return AriaHandWristPoseWrtWorld(
+        confidence=torch.full((len(indices),), float(confidence), dtype=torch.float32, device=device),
+        wrist_position=torch.from_numpy(np.asarray(data[wrist_key][sl][indices], dtype=np.float32)).to(device),
+        wrist_normal=normals_to_torch(normals, device),
+        palm_position=torch.from_numpy(np.asarray(data[palm_key][sl][indices], dtype=np.float32)).to(device),
+        palm_normal=normals_to_torch(normals, device),
+        indices=torch.from_numpy(indices).to(device=device, dtype=torch.int64),
+    )
+
+
+def normals_to_torch(normals: np.ndarray, device: torch.device) -> torch.Tensor:
+    normal_norm = np.linalg.norm(normals, axis=1, keepdims=True)
+    normals = normals / np.maximum(normal_norm, 1e-8)
+    return torch.from_numpy(normals.astype(np.float32)).to(device)
+
+
+def _make_csv_hand_detections(
+    data: np.lib.npyio.NpzFile,
+    start_index: int,
+    length: int,
+    device: torch.device,
+    confidence: float,
+    flip_normal: bool,
+):
+    from egoallo.hand_detection_structs import CorrespondedAriaHandWristPoseDetections
+
+    left = _make_csv_hand_side_detection(
+        data, "left", start_index, length, device, confidence, flip_normal
+    )
+    right = _make_csv_hand_side_detection(
+        data, "right", start_index, length, device, confidence, flip_normal
+    )
+    if left is None and right is None:
+        return None
+    return CorrespondedAriaHandWristPoseDetections(
+        detections_left_concat=left,
+        detections_right_concat=right,
+    )
+
+
 def main() -> None:
     repo_root = _repo_root()
     parser = argparse.ArgumentParser(description=__doc__)
@@ -39,6 +118,11 @@ def main() -> None:
     parser.add_argument("--num-samples", type=int, default=1)
     parser.add_argument("--glasses-x-angle-offset", type=float, default=0.0)
     parser.add_argument("--floor-z", type=float, default=None)
+    parser.add_argument("--hand-guidance", choices=("none", "csv_wrist"), default="none")
+    parser.add_argument("--guidance-inner", action=argparse.BooleanOptionalAction, default=None)
+    parser.add_argument("--guidance-post", action=argparse.BooleanOptionalAction, default=None)
+    parser.add_argument("--csv-hand-confidence", type=float, default=1.0)
+    parser.add_argument("--flip-hand-normal", action=argparse.BooleanOptionalAction, default=False)
     parser.add_argument("--save-traj", action=argparse.BooleanOptionalAction, default=True)
     args = parser.parse_args()
 
@@ -79,26 +163,44 @@ def main() -> None:
     cpf_position_mode = str(data["cpf_position_mode"]) if "cpf_position_mode" in data.files else "unknown"
     scene_points = data["scene_points"].shape[0] if "scene_points" in data.files else 0
 
+    aria_detections = None
+    if args.hand_guidance == "csv_wrist":
+        aria_detections = _make_csv_hand_detections(
+            data,
+            start_index=args.start_index + 1,
+            length=args.traj_length,
+            device=device,
+            confidence=args.csv_hand_confidence,
+            flip_normal=args.flip_hand_normal,
+        )
+        if aria_detections is None:
+            print("[warn] CSV wrist guidance requested, but no valid hand detections were found.")
+
+    guidance_mode = "aria_wrist_only" if aria_detections is not None else "no_hands"
+    guidance_inner = args.guidance_inner if args.guidance_inner is not None else aria_detections is not None
+    guidance_post = args.guidance_post if args.guidance_post is not None else aria_detections is not None
+
     print(f"Loaded {input_path}")
     print(
         f"Ts_world_cpf={tuple(Ts_world_cpf.shape)}, floor_z={floor_z:.4f}, "
         f"pose_source={pose_source}, cpf_position_mode={cpf_position_mode}, "
-        f"scene_points={scene_points}, device={device}"
+        f"scene_points={scene_points}, hand_guidance={args.hand_guidance}, "
+        f"guidance_mode={guidance_mode}, inner={guidance_inner}, post={guidance_post}, device={device}"
     )
     print("Loading model...")
     denoiser_network = load_denoiser(args.checkpoint_dir).to(device)
     body_model = fncsmpl.SmplhModel.load(args.smplh_npz_path).to(device)
 
-    print("Sampling with guidance_mode='off' (no VRS/HaMeR/Aria hand inputs)...")
+    print(f"Sampling with guidance_mode={guidance_mode!r}...")
     traj = run_sampling_with_stitching(
         denoiser_network,
         body_model=body_model,
-        guidance_mode="no_hands",
-        guidance_inner=False,
-        guidance_post=False,
+        guidance_mode=guidance_mode,
+        guidance_inner=guidance_inner,
+        guidance_post=guidance_post,
         Ts_world_cpf=Ts_world_cpf,
         hamer_detections=None,
-        aria_detections=None,
+        aria_detections=aria_detections,
         num_samples=args.num_samples,
         device=device,
         floor_z=floor_z,
@@ -125,6 +227,10 @@ def main() -> None:
             frame_nums=frame_nums,
             timestamps_ns=(np.asarray(pose_timestamps_sec) * 1e9).astype(np.int64),
             source_input=str(input_path),
+            hand_guidance=args.hand_guidance,
+            guidance_mode=guidance_mode,
+            guidance_inner=guidance_inner,
+            guidance_post=guidance_post,
         )
         serializable_args = {
             key: str(value) if isinstance(value, Path) else value

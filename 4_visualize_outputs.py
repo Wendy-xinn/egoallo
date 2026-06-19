@@ -250,7 +250,7 @@ def load_and_visualize(
             codec="libx264",
             pixelformat="yuv420p",
             quality=None,
-            ffmpeg_params=["-crf", "23"],
+            ffmpeg_params=["-crf", "23"],   # 18 = 很清晰  23 = 默认质量   28 = 比较糊
         )
         return output.getvalue()
 

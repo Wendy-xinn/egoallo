@@ -472,8 +472,8 @@ def visualize_traj_and_hand_detections(
         gui_framerate_options = server.gui.add_button_group(
             "FPS options", ("10", "20", "30", "60")
         )
-        gui_video_width = server.gui.add_number("Video width", initial_value=960)
-        gui_video_height = server.gui.add_number("Video height", initial_value=720)
+        gui_video_width = server.gui.add_number("Video width", initial_value=1920)
+        gui_video_height = server.gui.add_number("Video height", initial_value=1080)
         gui_get_mp4_video = server.gui.add_button("Get MP4 Video")
 
     # Frame step buttons.
@@ -568,7 +568,7 @@ def visualize_traj_and_hand_detections(
                 frame = client.get_render(
                     height=height,
                     width=width,
-                    transport_format="jpeg",
+                    transport_format="png",
                 )
                 if frame.ndim == 3 and frame.shape[-1] == 4:
                     frame = frame[..., :3]
@@ -585,7 +585,7 @@ def visualize_traj_and_hand_detections(
                 codec="libx264",
                 pixelformat="yuv420p",
                 quality=None,
-                ffmpeg_params=["-crf", "23"],
+                ffmpeg_params=["-crf", "18"],
             )
             notif.remove()
             client.send_file_download("viser_capture.mp4", output.getvalue())

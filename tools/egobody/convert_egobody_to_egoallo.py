@@ -22,6 +22,39 @@ import torch
 
 
 HEAD_HAND_EYE_COLS = 861
+HAND_JOINT_COUNT = 26
+HAND_PALM_INDEX = 0
+HAND_WRIST_INDEX = 1
+HAND_INDEX_METACARPAL_INDEX = 6
+HAND_LITTLE_METACARPAL_INDEX = 21
+HAND_JOINT_NAMES = [
+    "Palm",
+    "Wrist",
+    "ThumbMetacarpal",
+    "ThumbProximal",
+    "ThumbDistal",
+    "ThumbTip",
+    "IndexMetacarpal",
+    "IndexProximal",
+    "IndexIntermediate",
+    "IndexDistal",
+    "IndexTip",
+    "MiddleMetacarpal",
+    "MiddleProximal",
+    "MiddleIntermediate",
+    "MiddleDistal",
+    "MiddleTip",
+    "RingMetacarpal",
+    "RingProximal",
+    "RingIntermediate",
+    "RingDistal",
+    "RingTip",
+    "LittleMetacarpal",
+    "LittleProximal",
+    "LittleIntermediate",
+    "LittleDistal",
+    "LittleTip",
+]
 
 
 def _repo_root() -> Path:
@@ -62,6 +95,19 @@ def _read_head_hand_eye(csv_path: Path) -> dict[str, np.ndarray]:
         raise ValueError(f"Expected at least {HEAD_HAND_EYE_COLS} columns in {csv_path}, got {raw.shape[1]}")
 
     head_mats = raw[:, 1:17].reshape(-1, 4, 4)
+
+    left_valid_col = 17
+    left_start = 18
+    left_end = left_start + HAND_JOINT_COUNT * 16
+    right_valid_col = left_end
+    right_start = right_valid_col + 1
+    right_end = right_start + HAND_JOINT_COUNT * 16
+
+    left_hand_transs = raw[:, left_start:left_end].reshape(-1, HAND_JOINT_COUNT, 4, 4)[:, :, :3, 3]
+    right_hand_transs = raw[:, right_start:right_end].reshape(-1, HAND_JOINT_COUNT, 4, 4)[:, :, :3, 3]
+    left_hand_available = raw[:, left_valid_col] > 0.5
+    right_hand_available = raw[:, right_valid_col] > 0.5
+
     gaze_origin = raw[:, 852:855]
     gaze_direction = raw[:, 856:859]
     gaze_distance = raw[:, 860:861]
@@ -72,9 +118,15 @@ def _read_head_hand_eye(csv_path: Path) -> dict[str, np.ndarray]:
         & np.isfinite(gaze_origin).all(axis=1)
         & np.isfinite(gaze_direction).all(axis=1)
     )
+    left_hand_finite = np.isfinite(left_hand_transs).all(axis=(1, 2))
+    right_hand_finite = np.isfinite(right_hand_transs).all(axis=(1, 2))
     return {
         "timestamps": raw[:, 0].astype(np.int64),
         "head_mats": head_mats,
+        "left_hand_transs": left_hand_transs,
+        "left_hand_available": left_hand_available & left_hand_finite,
+        "right_hand_transs": right_hand_transs,
+        "right_hand_available": right_hand_available & right_hand_finite,
         "gaze_origin": gaze_origin,
         "gaze_direction": gaze_direction,
         "gaze_distance": gaze_distance,
@@ -174,12 +226,84 @@ def _axis_conversion_matrix(mode: str) -> np.ndarray:
     raise ValueError(f"Unknown axis conversion mode: {mode}")
 
 
-def _convert_pose_axes(mats: np.ndarray, mode: str) -> np.ndarray:
-    """Apply the same basis change to world and local pose coordinates."""
+def _convert_c2w_pose_axes(
+    mats: np.ndarray,
+    axis_mode: str,
+) -> np.ndarray:
+    """Convert local-to-world poses from EgoBody/HoloLens to EgoAllo world.
+
+    axis_mode changes the world basis only. The local CPF/head axes are left
+    untouched because EgoBody's head-hand-eye poses are already expressed with a
+    HoloLens/CPF-compatible device convention.
+    """
+    B = _axis_conversion_matrix(axis_mode)
+    out = np.broadcast_to(np.eye(4, dtype=np.float64), mats.shape).copy()
+    out[:, :3, :3] = np.einsum("ij,njk->nik", B, mats[:, :3, :3])
+    out[:, :3, 3] = np.einsum("ij,nj->ni", B, mats[:, :3, 3])
+    return out
+
+
+def _make_c2w_pose_from_rt(
+    rotations_holo: np.ndarray,
+    translations_holo: np.ndarray,
+    axis_mode: str,
+) -> np.ndarray:
+    mats = np.broadcast_to(np.eye(4, dtype=np.float64), (len(rotations_holo), 4, 4)).copy()
+    mats[:, :3, :3] = rotations_holo
+    mats[:, :3, 3] = translations_holo
+    return _convert_c2w_pose_axes(mats, axis_mode)
+
+
+def _head_cpf_rotation_matrix(mode: str) -> np.ndarray:
+    if mode == "smpl":
+        # EgoAllo builds CPF from the SMPL-H head joint. In the processed AMASS
+        # data, CPF +X points body-left, +Y points up, and +Z points forward.
+        # EgoBody/HoloLens head tracking uses the device convention X right,
+        # Y up, Z backward, so this is a 180 degree rotation about local +Y.
+        return np.diag([-1.0, 1.0, -1.0]).astype(np.float64)
+    if mode == "identity":
+        return np.eye(3, dtype=np.float64)
+    raise ValueError(f"Unknown head CPF rotation mode: {mode}")
+
+
+def _convert_points_axes(points: np.ndarray, mode: str) -> np.ndarray:
     B = _axis_conversion_matrix(mode)
-    B4 = np.eye(4, dtype=np.float64)
-    B4[:3, :3] = B
-    return B4[None] @ mats @ B4.T[None]
+    return np.einsum("ij,...j->...i", B, points)
+
+
+def _safe_normalize(vec: np.ndarray, fallback: np.ndarray | None = None) -> np.ndarray:
+    vec = np.asarray(vec, dtype=np.float64)
+    norm = np.linalg.norm(vec, axis=-1, keepdims=True)
+    valid = norm[..., 0] > 1e-8
+    out = np.zeros_like(vec)
+    out[valid] = vec[valid] / norm[valid]
+    if fallback is not None:
+        out[~valid] = fallback[~valid]
+    return out
+
+
+def _estimate_palm_normals(hand_joints: np.ndarray) -> np.ndarray:
+    """Estimate palm normals from HoloLens/EgoBody 26-joint hand positions.
+
+    Assumes the Windows hand-joint ordering used by EgoBody: palm=0, wrist=1,
+    index metacarpal=6, little metacarpal=21. The sign is a convention; if
+    guidance behaves badly, use egobody_inference.py --flip-hand-normal.
+    """
+    palm = hand_joints[:, HAND_PALM_INDEX]
+    index_base = hand_joints[:, HAND_INDEX_METACARPAL_INDEX]
+    little_base = hand_joints[:, HAND_LITTLE_METACARPAL_INDEX]
+    normal = np.cross(index_base - palm, little_base - palm)
+    fallback = np.zeros_like(normal)
+    fallback[:, 2] = 1.0
+    return _safe_normalize(normal, fallback=fallback)
+
+
+def _hand_guidance_fields(hand_joints: np.ndarray) -> dict[str, np.ndarray]:
+    return {
+        "wrist_position": hand_joints[:, HAND_WRIST_INDEX].astype(np.float32),
+        "palm_position": hand_joints[:, HAND_PALM_INDEX].astype(np.float32),
+        "palm_normal": _estimate_palm_normals(hand_joints).astype(np.float32),
+    }
 
 
 def _estimate_T_head_cpf(
@@ -272,6 +396,10 @@ def convert(args: argparse.Namespace) -> Path:
     head_data = _read_head_hand_eye(head_csv)
     head_idx, matched_head_ts, head_diff_ticks = _nearest_indices(query_ts, head_data["timestamps"])
     head_mats_holo = head_data["head_mats"][head_idx]
+    left_hand_joints_holo = head_data["left_hand_transs"][head_idx]
+    right_hand_joints_holo = head_data["right_hand_transs"][head_idx]
+    left_hand_available = head_data["left_hand_available"][head_idx]
+    right_hand_available = head_data["right_hand_available"][head_idx]
     gaze_origin_holo = head_data["gaze_origin"][head_idx]
     gaze_direction_holo = head_data["gaze_direction"][head_idx]
     gaze_available = head_data["gaze_available"][head_idx]
@@ -283,16 +411,46 @@ def convert(args: argparse.Namespace) -> Path:
         args.cpf_position_mode,
         tuple(args.head_cpf_translation),
     )
-    cpf_mats_holo = head_mats_holo @ T_head_cpf_holo[None]
+    R_head_cpf_holo = _head_cpf_rotation_matrix(args.head_cpf_rotation)
+    T_head_cpf_holo[:3, :3] = R_head_cpf_holo
+    head_cpf_offset_holo = T_head_cpf_holo[:3, 3]
+    cpf_trans_holo = (
+        np.einsum("nij,j->ni", head_mats_holo[:, :3, :3], head_cpf_offset_holo)
+        + head_mats_holo[:, :3, 3]
+    )
+    cpf_mats_holo = np.broadcast_to(
+        np.eye(4, dtype=np.float64), (len(head_mats_holo), 4, 4)
+    ).copy()
+    cpf_mats_holo[:, :3, :3] = np.einsum("nij,jk->nik", head_mats_holo[:, :3, :3], R_head_cpf_holo)
+    cpf_mats_holo[:, :3, 3] = cpf_trans_holo
 
     pv_txt = _find_pv_txt(egobody_root, args.recording)
     pv_meta, pv_frames = _read_pv_txt(pv_txt)
     pv_mats_holo, matched_pv_ts, pv_diff_ticks, K_fullimg = _nearest_pv(query_ts, pv_meta, pv_frames)
 
-    Ts_world_cpf_mats = _convert_pose_axes(cpf_mats_holo, args.axis_conversion).astype(np.float32)
-    Ts_world_head_mats = _convert_pose_axes(head_mats_holo, args.axis_conversion).astype(np.float32)
-    Ts_world_pv_mats = _convert_pose_axes(pv_mats_holo, args.axis_conversion).astype(np.float32)
-    T_head_cpf_converted = _convert_pose_axes(T_head_cpf_holo[None], args.axis_conversion)[0].astype(np.float32)
+    if args.cpf_rotation_source == "head":
+        cpf_rot_holo = np.einsum("nij,jk->nik", head_mats_holo[:, :3, :3], R_head_cpf_holo)
+    elif args.cpf_rotation_source == "pv":
+        cpf_rot_holo = np.einsum("nij,jk->nik", pv_mats_holo[:, :3, :3], R_head_cpf_holo)
+    else:
+        raise ValueError(f"Unknown cpf rotation source: {args.cpf_rotation_source}")
+
+    Ts_world_cpf_mats = _make_c2w_pose_from_rt(
+        cpf_rot_holo,
+        cpf_trans_holo,
+        args.axis_conversion,
+    ).astype(np.float32)
+    Ts_world_head_mats = _convert_c2w_pose_axes(
+        head_mats_holo, args.axis_conversion
+    ).astype(np.float32)
+    Ts_world_pv_mats = _convert_c2w_pose_axes(
+        pv_mats_holo, args.axis_conversion
+    ).astype(np.float32)
+    left_hand_joints_world = _convert_points_axes(left_hand_joints_holo, args.axis_conversion).astype(np.float32)
+    right_hand_joints_world = _convert_points_axes(right_hand_joints_holo, args.axis_conversion).astype(np.float32)
+    left_hand_fields = _hand_guidance_fields(left_hand_joints_world)
+    right_hand_fields = _hand_guidance_fields(right_hand_joints_world)
+    T_head_cpf_converted = T_head_cpf_holo.astype(np.float32)
 
     if np.max(head_diff_ticks) > args.max_time_diff_ticks:
         print(
@@ -317,13 +475,14 @@ def convert(args: argparse.Namespace) -> Path:
     out_dir = args.output_root / args.recording
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "egoallo_outputs").mkdir(exist_ok=True)
-    out_path = out_dir / "egobody_egoallo_input.npz"
+    out_path = out_dir / args.output_name
 
     np.savez_compressed(
         out_path,
         recording=args.recording,
         pose_source="head_gaze_estimated_cpf",
         cpf_position_mode=args.cpf_position_mode,
+        cpf_rotation_source=args.cpf_rotation_source,
         Ts_world_cpf_mats=Ts_world_cpf_mats,
         Ts_world_device_mats=Ts_world_head_mats,
         Ts_world_head_mats=Ts_world_head_mats,
@@ -333,6 +492,20 @@ def convert(args: argparse.Namespace) -> Path:
         Ts_holo_pv_mats=pv_mats_holo.astype(np.float32),
         T_head_cpf_holo=T_head_cpf_holo.astype(np.float32),
         T_head_cpf_converted=T_head_cpf_converted,
+        hand_joint_names=np.asarray(HAND_JOINT_NAMES),
+        hand_joint_convention="Windows.Mirage/EgoBody 26 joints: palm=0, wrist=1, index_metacarpal=6, little_metacarpal=21",
+        left_hand_joints_holo=left_hand_joints_holo.astype(np.float32),
+        right_hand_joints_holo=right_hand_joints_holo.astype(np.float32),
+        left_hand_joints_world=left_hand_joints_world,
+        right_hand_joints_world=right_hand_joints_world,
+        left_hand_available=left_hand_available,
+        right_hand_available=right_hand_available,
+        left_hand_wrist_position=left_hand_fields["wrist_position"],
+        left_hand_palm_position=left_hand_fields["palm_position"],
+        left_hand_palm_normal=left_hand_fields["palm_normal"],
+        right_hand_wrist_position=right_hand_fields["wrist_position"],
+        right_hand_palm_position=right_hand_fields["palm_position"],
+        right_hand_palm_normal=right_hand_fields["palm_normal"],
         gaze_origin_holo=gaze_origin_holo.astype(np.float32),
         gaze_direction_holo=gaze_direction_holo.astype(np.float32),
         gaze_available=gaze_available,
@@ -360,9 +533,11 @@ def convert(args: argparse.Namespace) -> Path:
         "num_frames": len(imgnames),
         "pose_source": "head_gaze_estimated_cpf",
         "cpf_position_mode": args.cpf_position_mode,
+        "cpf_rotation_source": args.cpf_rotation_source,
+        "head_cpf_rotation": args.head_cpf_rotation,
         "cpf_stats": cpf_stats,
         "axis_conversion": args.axis_conversion,
-        "coordinate_convention": "Ts_world_cpf is estimated as T_world_head @ T_head_cpf; T_head_cpf is fixed and estimated from gaze origins by default.",
+        "coordinate_convention": "CPF position is estimated from head/gaze. CPF rotation uses a fixed head-to-CPF rotation before converting the world basis to EgoAllo z-up.",
         "floor_z": floor_z,
         "scene_points": int(scene_points.shape[0]),
         "head_hand_eye_csv": str(head_csv),
@@ -373,12 +548,17 @@ def convert(args: argparse.Namespace) -> Path:
         "max_pv_time_diff_ticks": int(np.max(pv_diff_ticks)),
         "median_pv_time_diff_ticks": float(np.median(pv_diff_ticks)),
         "gaze_available_frames": int(np.count_nonzero(gaze_available)),
+        "left_hand_available_frames": int(np.count_nonzero(left_hand_available)),
+        "right_hand_available_frames": int(np.count_nonzero(right_hand_available)),
+        "hand_joint_convention": "Windows hand joint order: palm=0, wrist=1, index_metacarpal=6, little_metacarpal=21",
     }
     (out_dir / "metadata.json").write_text(json.dumps(metadata, indent=2))
     (out_dir / "image_paths.txt").write_text("\n".join(imgnames) + "\n")
     np.save(out_dir / "scene_points.npy", scene_points)
     np.save(out_dir / "cpf_trajectory.npy", Ts_world_cpf_mats[:, :3, 3])
     np.save(out_dir / "head_trajectory.npy", Ts_world_head_mats[:, :3, 3])
+    np.save(out_dir / "left_hand_wrist_trajectory.npy", left_hand_fields["wrist_position"])
+    np.save(out_dir / "right_hand_wrist_trajectory.npy", right_hand_fields["wrist_position"])
 
     print(f"Saved {out_path}")
     print(json.dumps(metadata, indent=2))
@@ -410,6 +590,9 @@ def build_parser() -> argparse.ArgumentParser:
         help="Fallback/manual CPF translation in the EgoBody head frame, meters.",
     )
     parser.add_argument("--axis-conversion", choices=["holo_y_up_to_z_up", "none"], default="holo_y_up_to_z_up")
+    parser.add_argument("--cpf-rotation-source", choices=["head", "pv"], default="head", help="Use HoloLens head tracking or PV camera rotation for T_world_cpf")
+    parser.add_argument("--head-cpf-rotation", choices=["smpl", "identity"], default="smpl", help="Fixed local rotation from EgoBody/HoloLens head frame to EgoAllo/SMPL CPF frame")
+    parser.add_argument("--output-name", default="egobody_egoallo_input.npz", help="Name of the converted NPZ written under the recording output directory")
     parser.add_argument("--floor-z", type=float, default=None, help="Override floor z in converted world coordinates")
     parser.add_argument("--assumed-head-height-m", type=float, default=1.6)
     parser.add_argument("--max-time-diff-ticks", type=int, default=2_000_000)

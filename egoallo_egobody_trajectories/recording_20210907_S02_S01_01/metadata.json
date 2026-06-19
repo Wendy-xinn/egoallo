@@ -1,0 +1,32 @@
+{
+  "recording": "recording_20210907_S02_S01_01",
+  "num_frames": 763,
+  "pose_source": "head_gaze_estimated_cpf",
+  "cpf_position_mode": "gaze_median",
+  "cpf_rotation_source": "head",
+  "head_cpf_rotation": "smpl",
+  "cpf_stats": {
+    "source": "gaze_median",
+    "num_valid_gaze_frames": 763,
+    "translation_head_cpf": [
+      9.665583489130991e-06,
+      -0.001111656153862831,
+      -0.008314599001392094
+    ]
+  },
+  "axis_conversion": "holo_y_up_to_z_up",
+  "coordinate_convention": "CPF position is estimated from head/gaze. CPF rotation uses a fixed head-to-CPF rotation before converting the world basis to EgoAllo z-up.",
+  "floor_z": -1.5006935596466064,
+  "scene_points": 1982,
+  "head_hand_eye_csv": "/public/home/wenxin/egobody/egocentric_gaze/recording_20210907_S02_S01_01/2021-09-07-155421/2021-09-07-155421_head_hand_eye.csv",
+  "pv_txt": "/public/home/wenxin/egobody/egocentric_color/recording_20210907_S02_S01_01/2021-09-07-155421/2021-09-07-155421_pv.txt",
+  "preprocess_path": "/public/home/wenxin/egobody/output/view1/recording_20210907_S02_S01_01/preprocess_view1.pt",
+  "max_head_time_diff_ticks": 301816,
+  "median_head_time_diff_ticks": 43292.0,
+  "max_pv_time_diff_ticks": 0,
+  "median_pv_time_diff_ticks": 0.0,
+  "gaze_available_frames": 763,
+  "left_hand_available_frames": 41,
+  "right_hand_available_frames": 138,
+  "hand_joint_convention": "Windows hand joint order: palm=0, wrist=1, index_metacarpal=6, little_metacarpal=21"
+}

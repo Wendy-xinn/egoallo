@@ -1,0 +1,375 @@
+{
+  "exo_world_npz": "/public/home/wenxin/egoallo/egoallo_egobody_trajectories/recording_20210907_S04_S03_02/gvhmr_exo/recording_20210907_S04_S03_02_000578_000706_try1_exo_world_optimized.npz",
+  "input_npz": "/public/home/wenxin/egoallo/egoallo_egobody_trajectories/recording_20210907_S04_S03_02/egobody_egoallo_input.npz",
+  "recording": "recording_20210907_S04_S03_02",
+  "start_index": 578,
+  "end_index": 706,
+  "num_frames": 128,
+  "camera_convention": "opencv_to_holo",
+  "gt_coordinate_mode": "kinect12_to_holo_zup",
+  "root_pred_min": [
+    -4.983310699462891,
+    -0.013056625612080097,
+    -0.29470622539520264
+  ],
+  "root_pred_max": [
+    -4.6891889572143555,
+    0.052031584084033966,
+    -0.22060054540634155
+  ],
+  "pv_camera_min": [
+    -3.382349967956543,
+    0.38712701201438904,
+    0.5419859886169434
+  ],
+  "pv_camera_max": [
+    -2.971909999847412,
+    0.776852011680603,
+    0.5877959728240967
+  ],
+  "gt_valid_frames": 128,
+  "root_offset_pred_minus_gt_mean_m": [
+    -0.05338806286454201,
+    -0.025966864079236984,
+    0.29216301441192627
+  ],
+  "root_offset_pred_minus_gt_median_m": [
+    -0.045081138610839844,
+    -0.030418166890740395,
+    0.2880929112434387
+  ],
+  "root_offset_pred_minus_gt_first_m": [
+    0.03603553771972656,
+    0.025188051164150238,
+    0.32920414209365845
+  ],
+  "root_l2_error_m": {
+    "mean": 0.3050459027290344,
+    "median": 0.30114373564720154,
+    "p90": 0.33253180980682373,
+    "max": 0.36449098587036133
+  },
+  "root_xy_error_m": {
+    "mean": 0.07626493275165558,
+    "median": 0.0637626126408577,
+    "p90": 0.14714574813842773,
+    "max": 0.2310425490140915
+  },
+  "root_z_error_m": {
+    "mean": 0.29216307401657104,
+    "median": 0.2880929112434387,
+    "p90": 0.3108375072479248,
+    "max": 0.3312036395072937
+  },
+  "root_l2_error_mean_aligned_m": {
+    "mean": 0.057264115661382675,
+    "median": 0.0504956878721714,
+    "p90": 0.10805536061525345,
+    "max": 0.17404325306415558
+  },
+  "root_xy_error_mean_aligned_m": {
+    "mean": 0.055550467222929,
+    "median": 0.04843757301568985,
+    "p90": 0.10562390089035034,
+    "max": 0.17374096810817719
+  },
+  "root_z_error_mean_aligned_m": {
+    "mean": 0.010398734360933304,
+    "median": 0.0079878568649292,
+    "p90": 0.021125536412000656,
+    "max": 0.03904062509536743
+  },
+  "root_l2_error_first_aligned_m": {
+    "mean": 0.11770440638065338,
+    "median": 0.11073793470859528,
+    "p90": 0.1916082799434662,
+    "max": 0.2763546109199524
+  },
+  "root_xy_error_first_aligned_m": {
+    "mean": 0.11050189286470413,
+    "median": 0.10255929827690125,
+    "p90": 0.18701043725013733,
+    "max": 0.2722776234149933
+  },
+  "root_z_error_first_aligned_m": {
+    "mean": 0.037126921117305756,
+    "median": 0.04111123085021973,
+    "p90": 0.04970366880297661,
+    "max": 0.05848580598831177
+  },
+  "root_delta_pred_min_m": [
+    -0.29412174224853516,
+    -0.024597598239779472,
+    -0.06696903705596924
+  ],
+  "root_delta_pred_max_m": [
+    0.0,
+    0.040490612387657166,
+    0.007136642932891846
+  ],
+  "root_delta_gt_min_m": [
+    -0.21465587615966797,
+    -0.002644062042236328,
+    -0.020855605602264404
+  ],
+  "root_delta_gt_max_m": [
+    0.05619382858276367,
+    0.12552446126937866,
+    0.012451231479644775
+  ],
+  "gt_root_min": [
+    -4.93988037109375,
+    -0.016291141510009766,
+    -0.5777969360351562
+  ],
+  "gt_root_max": [
+    -4.669030666351318,
+    0.11187738180160522,
+    -0.5444900989532471
+  ],
+  "exo_body_joint_metrics": {
+    "valid_frames": 128,
+    "joint_indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21
+    ],
+    "mpjpe_m": {
+      "mean": 0.11789187043905258,
+      "median": 0.1235552728176117,
+      "p90": 0.14974716305732727,
+      "max": 0.19716189801692963
+    },
+    "root_aligned_mpjpe_m": {
+      "mean": 0.07906027138233185,
+      "median": 0.07802864909172058,
+      "p90": 0.10502205044031143,
+      "max": 0.11705794930458069
+    },
+    "pa_mpjpe_m": {
+      "mean": 0.06138712912797928,
+      "median": 0.059679366648197174,
+      "p90": 0.08655334264039993,
+      "max": 0.09745735675096512
+    }
+  },
+  "ego_sensor_head_track_error_m": {
+    "valid_frames": 128,
+    "l2_m": {
+      "mean": 0.09037923812866211,
+      "median": 0.09230812638998032,
+      "p90": 0.09746158123016357,
+      "max": 0.09959662705659866
+    },
+    "xyz_abs_m": {
+      "x": {
+        "mean": 0.08529818058013916,
+        "median": 0.08635008335113525,
+        "p90": 0.09390516579151154,
+        "max": 0.09538578987121582
+      },
+      "y": {
+        "mean": 0.01775728166103363,
+        "median": 0.015798419713974,
+        "p90": 0.031720053404569626,
+        "max": 0.03896719217300415
+      },
+      "z": {
+        "mean": 0.021464914083480835,
+        "median": 0.019161105155944824,
+        "p90": 0.03208864852786064,
+        "max": 0.034790098667144775
+      }
+    }
+  },
+  "ego_sensor_left_wrist_track_error_m": {
+    "valid_frames": 0
+  },
+  "ego_sensor_right_wrist_track_error_m": {
+    "valid_frames": 0
+  },
+  "baseline_comparison": {
+    "source": "embedded_original",
+    "root_l2_error_m": {
+      "mean": 0.30536407232284546,
+      "median": 0.30210697650909424,
+      "p90": 0.3328019976615906,
+      "max": 0.36000707745552063
+    },
+    "root_z_error_m": {
+      "mean": 0.29216307401657104,
+      "median": 0.2880929112434387,
+      "p90": 0.3108375072479248,
+      "max": 0.3312036395072937
+    },
+    "delta_current_minus_baseline_root_l2_mean_m": -0.00031816959381103516,
+    "exo_body_joint_metrics": {
+      "valid_frames": 128,
+      "joint_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21
+      ],
+      "mpjpe_m": {
+        "mean": 0.11869550496339798,
+        "median": 0.12446574866771698,
+        "p90": 0.15149639546871185,
+        "max": 0.19106420874595642
+      },
+      "root_aligned_mpjpe_m": {
+        "mean": 0.07906027138233185,
+        "median": 0.07802864909172058,
+        "p90": 0.10502205044031143,
+        "max": 0.11705794930458069
+      },
+      "pa_mpjpe_m": {
+        "mean": 0.06138712912797928,
+        "median": 0.059679362922906876,
+        "p90": 0.08655334264039993,
+        "max": 0.09745735675096512
+      }
+    },
+    "delta_current_minus_baseline_mpjpe_mean_m": -0.000803634524345398,
+    "delta_current_minus_baseline_pa_mpjpe_mean_m": 0.0
+  },
+  "overlays": [
+    {
+      "sampled_vertices": 575.0,
+      "vertex_positive_depth_fraction": 1.0,
+      "vertex_in_image_fraction": 0.9008695652173913,
+      "joint_positive_depth_fraction": 1.0,
+      "joint_in_image_fraction": 0.8333333333333334,
+      "bbox_u_min": 729.5315551757812,
+      "bbox_v_min": 104.22964477539062,
+      "bbox_u_max": 1089.53515625,
+      "bbox_v_max": 1076.3310546875,
+      "rel_index": 0,
+      "input_index": 578,
+      "frame_id": 2359,
+      "image_path": "/public/home/wenxin/egobody/egocentric_color/recording_20210907_S04_S03_02/2021-09-07-171131/PV/132755011540265108_frame_02359.jpg",
+      "output_path": "/public/home/wenxin/egoallo/egoallo_egobody_trajectories/recording_20210907_S04_S03_02/gvhmr_exo/recording_20210907_S04_S03_02_000578_000706_try1_exo_world_optimized_reprojection_debug/overlays/reprojection_0000_input_000578.jpg"
+    },
+    {
+      "sampled_vertices": 575.0,
+      "vertex_positive_depth_fraction": 1.0,
+      "vertex_in_image_fraction": 0.7860869565217391,
+      "joint_positive_depth_fraction": 1.0,
+      "joint_in_image_fraction": 0.6666666666666666,
+      "bbox_u_min": 540.06103515625,
+      "bbox_v_min": 465.0139465332031,
+      "bbox_u_max": 1020.0234375,
+      "bbox_v_max": 1070.4296875,
+      "rel_index": 25,
+      "input_index": 603,
+      "frame_id": 2386,
+      "image_path": "/public/home/wenxin/egobody/egocentric_color/recording_20210907_S04_S03_02/2021-09-07-171131/PV/132755011549261415_frame_02386.jpg",
+      "output_path": "/public/home/wenxin/egoallo/egoallo_egobody_trajectories/recording_20210907_S04_S03_02/gvhmr_exo/recording_20210907_S04_S03_02_000578_000706_try1_exo_world_optimized_reprojection_debug/overlays/reprojection_0025_input_000603.jpg"
+    },
+    {
+      "sampled_vertices": 575.0,
+      "vertex_positive_depth_fraction": 1.0,
+      "vertex_in_image_fraction": 0.7843478260869565,
+      "joint_positive_depth_fraction": 1.0,
+      "joint_in_image_fraction": 0.6666666666666666,
+      "bbox_u_min": 654.9375,
+      "bbox_v_min": 435.6444396972656,
+      "bbox_u_max": 1211.2913818359375,
+      "bbox_v_max": 1074.88232421875,
+      "rel_index": 51,
+      "input_index": 629,
+      "frame_id": 2419,
+      "image_path": "/public/home/wenxin/egobody/egocentric_color/recording_20210907_S04_S03_02/2021-09-07-171131/PV/132755011560256901_frame_02419.jpg",
+      "output_path": "/public/home/wenxin/egoallo/egoallo_egobody_trajectories/recording_20210907_S04_S03_02/gvhmr_exo/recording_20210907_S04_S03_02_000578_000706_try1_exo_world_optimized_reprojection_debug/overlays/reprojection_0051_input_000629.jpg"
+    },
+    {
+      "sampled_vertices": 575.0,
+      "vertex_positive_depth_fraction": 1.0,
+      "vertex_in_image_fraction": 0.8052173913043478,
+      "joint_positive_depth_fraction": 1.0,
+      "joint_in_image_fraction": 0.75,
+      "bbox_u_min": 567.6123046875,
+      "bbox_v_min": 321.49053955078125,
+      "bbox_u_max": 1081.779052734375,
+      "bbox_v_max": 1078.820556640625,
+      "rel_index": 76,
+      "input_index": 654,
+      "frame_id": 2449,
+      "image_path": "/public/home/wenxin/egobody/egocentric_color/recording_20210907_S04_S03_02/2021-09-07-171131/PV/132755011570252798_frame_02449.jpg",
+      "output_path": "/public/home/wenxin/egoallo/egoallo_egobody_trajectories/recording_20210907_S04_S03_02/gvhmr_exo/recording_20210907_S04_S03_02_000578_000706_try1_exo_world_optimized_reprojection_debug/overlays/reprojection_0076_input_000654.jpg"
+    },
+    {
+      "sampled_vertices": 575.0,
+      "vertex_positive_depth_fraction": 1.0,
+      "vertex_in_image_fraction": 0.7895652173913044,
+      "joint_positive_depth_fraction": 1.0,
+      "joint_in_image_fraction": 0.7083333333333334,
+      "bbox_u_min": 529.8825073242188,
+      "bbox_v_min": 410.3012390136719,
+      "bbox_u_max": 1035.953369140625,
+      "bbox_v_max": 1065.6416015625,
+      "rel_index": 102,
+      "input_index": 680,
+      "frame_id": 2481,
+      "image_path": "/public/home/wenxin/egobody/egocentric_color/recording_20210907_S04_S03_02/2021-09-07-171131/PV/132755011580915088_frame_02481.jpg",
+      "output_path": "/public/home/wenxin/egoallo/egoallo_egobody_trajectories/recording_20210907_S04_S03_02/gvhmr_exo/recording_20210907_S04_S03_02_000578_000706_try1_exo_world_optimized_reprojection_debug/overlays/reprojection_0102_input_000680.jpg"
+    },
+    {
+      "sampled_vertices": 575.0,
+      "vertex_positive_depth_fraction": 1.0,
+      "vertex_in_image_fraction": 0.7773913043478261,
+      "joint_positive_depth_fraction": 1.0,
+      "joint_in_image_fraction": 0.6666666666666666,
+      "bbox_u_min": 539.1075439453125,
+      "bbox_v_min": 444.4085388183594,
+      "bbox_u_max": 984.8989868164062,
+      "bbox_v_max": 1075.37841796875,
+      "rel_index": 127,
+      "input_index": 705,
+      "frame_id": 2523,
+      "image_path": "/public/home/wenxin/egobody/egocentric_color/recording_20210907_S04_S03_02/2021-09-07-171131/PV/132755011594909342_frame_02523.jpg",
+      "output_path": "/public/home/wenxin/egoallo/egoallo_egobody_trajectories/recording_20210907_S04_S03_02/gvhmr_exo/recording_20210907_S04_S03_02_000578_000706_try1_exo_world_optimized_reprojection_debug/overlays/reprojection_0127_input_000705.jpg"
+    }
+  ],
+  "overlay_vertex_positive_depth_fraction_mean": 1.0,
+  "overlay_vertex_in_image_fraction_mean": 0.8072463768115942,
+  "overlay_joint_positive_depth_fraction_mean": 1.0,
+  "overlay_joint_in_image_fraction_mean": 0.7152777777777778
+}

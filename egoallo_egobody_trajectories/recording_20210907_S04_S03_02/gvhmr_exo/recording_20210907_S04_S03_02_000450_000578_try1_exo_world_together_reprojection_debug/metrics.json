@@ -1,0 +1,375 @@
+{
+  "exo_world_npz": "/public/home/wenxin/egoallo/egoallo_egobody_trajectories/recording_20210907_S04_S03_02/gvhmr_exo/recording_20210907_S04_S03_02_000450_000578_try1_exo_world_together.npz",
+  "input_npz": "/public/home/wenxin/egoallo/egoallo_egobody_trajectories/recording_20210907_S04_S03_02/egobody_egoallo_input.npz",
+  "recording": "recording_20210907_S04_S03_02",
+  "start_index": 450,
+  "end_index": 578,
+  "num_frames": 128,
+  "camera_convention": "opencv_to_holo",
+  "gt_coordinate_mode": "kinect12_to_holo_zup",
+  "root_pred_min": [
+    -4.87650203704834,
+    -0.6479493379592896,
+    -0.31468522548675537
+  ],
+  "root_pred_max": [
+    -3.8661048412323,
+    0.13154493272304535,
+    -0.21204175055027008
+  ],
+  "pv_camera_min": [
+    -3.0357000827789307,
+    0.7793400287628174,
+    0.514868974685669
+  ],
+  "pv_camera_max": [
+    -2.8812899589538574,
+    1.3054499626159668,
+    0.5568270087242126
+  ],
+  "gt_valid_frames": 128,
+  "root_offset_pred_minus_gt_mean_m": [
+    -0.10620743036270142,
+    -0.05293884500861168,
+    0.31054455041885376
+  ],
+  "root_offset_pred_minus_gt_median_m": [
+    -0.07669627666473389,
+    -0.033572763204574585,
+    0.31914758682250977
+  ],
+  "root_offset_pred_minus_gt_first_m": [
+    -0.05394554138183594,
+    -0.035009074956178665,
+    0.3330807685852051
+  ],
+  "root_l2_error_m": {
+    "mean": 0.3456547260284424,
+    "median": 0.3343946039676666,
+    "p90": 0.37918707728385925,
+    "max": 0.7024648189544678
+  },
+  "root_xy_error_m": {
+    "mean": 0.12448206543922424,
+    "median": 0.09157131612300873,
+    "p90": 0.2659369111061096,
+    "max": 0.618236780166626
+  },
+  "root_z_error_m": {
+    "mean": 0.31054455041885376,
+    "median": 0.31914758682250977,
+    "p90": 0.32975801825523376,
+    "max": 0.33450984954833984
+  },
+  "root_l2_error_mean_aligned_m": {
+    "mean": 0.08068288862705231,
+    "median": 0.06126718968153,
+    "p90": 0.15303590893745422,
+    "max": 0.5796219110488892
+  },
+  "root_xy_error_mean_aligned_m": {
+    "mean": 0.07839609682559967,
+    "median": 0.05957494676113129,
+    "p90": 0.14876581728458405,
+    "max": 0.5791661143302917
+  },
+  "root_z_error_mean_aligned_m": {
+    "mean": 0.016874263063073158,
+    "median": 0.013592392206192017,
+    "p90": 0.038664560765028,
+    "max": 0.06292188167572021
+  },
+  "root_l2_error_first_aligned_m": {
+    "mean": 0.07970289885997772,
+    "median": 0.04963352158665657,
+    "p90": 0.2124839425086975,
+    "max": 0.5877100229263306
+  },
+  "root_xy_error_first_aligned_m": {
+    "mean": 0.07553955912590027,
+    "median": 0.044932033866643906,
+    "p90": 0.2019510120153427,
+    "max": 0.5877098441123962
+  },
+  "root_z_error_first_aligned_m": {
+    "mean": 0.022575248032808304,
+    "median": 0.013933166861534119,
+    "p90": 0.06120077893137932,
+    "max": 0.08545809984207153
+  },
+  "root_delta_pred_min_m": [
+    -0.9322900772094727,
+    -0.6351727843284607,
+    -0.08410228788852692
+  ],
+  "root_delta_pred_max_m": [
+    0.07810711860656738,
+    0.144321471452713,
+    0.018541187047958374
+  ],
+  "root_delta_gt_min_m": [
+    -0.8569049835205078,
+    -0.05231666564941406,
+    -0.015206634998321533
+  ],
+  "root_delta_gt_max_m": [
+    0.043565988540649414,
+    0.12152737379074097,
+    0.03000342845916748
+  ],
+  "gt_root_min": [
+    -4.747171401977539,
+    -0.03008413314819336,
+    -0.5788703560829163
+  ],
+  "gt_root_max": [
+    -3.846700429916382,
+    0.14375990629196167,
+    -0.5336602926254272
+  ],
+  "exo_body_joint_metrics": {
+    "valid_frames": 128,
+    "joint_indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21
+    ],
+    "mpjpe_m": {
+      "mean": 0.11683047562837601,
+      "median": 0.08171109855175018,
+      "p90": 0.2440607249736786,
+      "max": 0.6543065905570984
+    },
+    "root_aligned_mpjpe_m": {
+      "mean": 0.06579643487930298,
+      "median": 0.05872324854135513,
+      "p90": 0.08952025324106216,
+      "max": 0.1479332596063614
+    },
+    "pa_mpjpe_m": {
+      "mean": 0.047730788588523865,
+      "median": 0.04599934443831444,
+      "p90": 0.06212577223777771,
+      "max": 0.06902170181274414
+    }
+  },
+  "ego_sensor_head_track_error_m": {
+    "valid_frames": 128,
+    "l2_m": {
+      "mean": 0.10299985110759735,
+      "median": 0.10082736611366272,
+      "p90": 0.11668504774570465,
+      "max": 0.1350683867931366
+    },
+    "xyz_abs_m": {
+      "x": {
+        "mean": 0.08063355088233948,
+        "median": 0.07292711734771729,
+        "p90": 0.10958857834339142,
+        "max": 0.12191605567932129
+      },
+      "y": {
+        "mean": 0.053553301841020584,
+        "median": 0.0581112802028656,
+        "p90": 0.0758042186498642,
+        "max": 0.08777451515197754
+      },
+      "z": {
+        "mean": 0.01878252439200878,
+        "median": 0.022349387407302856,
+        "p90": 0.030429059639573097,
+        "max": 0.03177952766418457
+      }
+    }
+  },
+  "ego_sensor_left_wrist_track_error_m": {
+    "valid_frames": 0
+  },
+  "ego_sensor_right_wrist_track_error_m": {
+    "valid_frames": 0
+  },
+  "baseline_comparison": {
+    "source": "/public/home/wenxin/egoallo/egoallo_egobody_trajectories/recording_20210907_S04_S03_02/gvhmr_exo/recording_20210907_S04_S03_02_000450_000578_try1_exo_world.npz",
+    "root_l2_error_m": {
+      "mean": 0.3373485803604126,
+      "median": 0.33186838030815125,
+      "p90": 0.3639126420021057,
+      "max": 0.705735445022583
+    },
+    "root_z_error_m": {
+      "mean": 0.2945214509963989,
+      "median": 0.31421101093292236,
+      "p90": 0.3386436998844147,
+      "max": 0.35324329137802124
+    },
+    "delta_current_minus_baseline_root_l2_mean_m": 0.008306145668029785,
+    "exo_body_joint_metrics": {
+      "valid_frames": 128,
+      "joint_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21
+      ],
+      "mpjpe_m": {
+        "mean": 0.1294780969619751,
+        "median": 0.08789590001106262,
+        "p90": 0.28457769751548767,
+        "max": 0.6658422350883484
+      },
+      "root_aligned_mpjpe_m": {
+        "mean": 0.06612762063741684,
+        "median": 0.058854177594184875,
+        "p90": 0.089518703520298,
+        "max": 0.14773140847682953
+      },
+      "pa_mpjpe_m": {
+        "mean": 0.047730788588523865,
+        "median": 0.04599935561418533,
+        "p90": 0.0621257983148098,
+        "max": 0.06902170926332474
+      }
+    },
+    "delta_current_minus_baseline_mpjpe_mean_m": -0.01264762133359909,
+    "delta_current_minus_baseline_pa_mpjpe_mean_m": 0.0
+  },
+  "overlays": [
+    {
+      "sampled_vertices": 575.0,
+      "vertex_positive_depth_fraction": 1.0,
+      "vertex_in_image_fraction": 0.888695652173913,
+      "joint_positive_depth_fraction": 1.0,
+      "joint_in_image_fraction": 0.8333333333333334,
+      "bbox_u_min": 813.769287109375,
+      "bbox_v_min": 15.169769287109375,
+      "bbox_u_max": 1245.744384765625,
+      "bbox_v_max": 1073.493896484375,
+      "rel_index": 0,
+      "input_index": 450,
+      "frame_id": 2178,
+      "image_path": "/public/home/wenxin/egobody/egocentric_color/recording_20210907_S04_S03_02/2021-09-07-171131/PV/132755011479956532_frame_02178.jpg",
+      "output_path": "/public/home/wenxin/egoallo/egoallo_egobody_trajectories/recording_20210907_S04_S03_02/gvhmr_exo/recording_20210907_S04_S03_02_000450_000578_try1_exo_world_together_reprojection_debug/overlays/reprojection_0000_input_000450.jpg"
+    },
+    {
+      "sampled_vertices": 575.0,
+      "vertex_positive_depth_fraction": 1.0,
+      "vertex_in_image_fraction": 0.8939130434782608,
+      "joint_positive_depth_fraction": 1.0,
+      "joint_in_image_fraction": 0.8333333333333334,
+      "bbox_u_min": 850.863037109375,
+      "bbox_v_min": 27.5445556640625,
+      "bbox_u_max": 1235.8575439453125,
+      "bbox_v_max": 1078.0191650390625,
+      "rel_index": 25,
+      "input_index": 475,
+      "frame_id": 2205,
+      "image_path": "/public/home/wenxin/egobody/egocentric_color/recording_20210907_S04_S03_02/2021-09-07-171131/PV/132755011488952839_frame_02205.jpg",
+      "output_path": "/public/home/wenxin/egoallo/egoallo_egobody_trajectories/recording_20210907_S04_S03_02/gvhmr_exo/recording_20210907_S04_S03_02_000450_000578_try1_exo_world_together_reprojection_debug/overlays/reprojection_0025_input_000475.jpg"
+    },
+    {
+      "sampled_vertices": 575.0,
+      "vertex_positive_depth_fraction": 1.0,
+      "vertex_in_image_fraction": 0.8956521739130435,
+      "joint_positive_depth_fraction": 1.0,
+      "joint_in_image_fraction": 0.8333333333333334,
+      "bbox_u_min": 941.101806640625,
+      "bbox_v_min": 77.06039428710938,
+      "bbox_u_max": 1313.3668212890625,
+      "bbox_v_max": 1077.48046875,
+      "rel_index": 51,
+      "input_index": 501,
+      "frame_id": 2231,
+      "image_path": "/public/home/wenxin/egobody/egocentric_color/recording_20210907_S04_S03_02/2021-09-07-171131/PV/132755011497615950_frame_02231.jpg",
+      "output_path": "/public/home/wenxin/egoallo/egoallo_egobody_trajectories/recording_20210907_S04_S03_02/gvhmr_exo/recording_20210907_S04_S03_02_000450_000578_try1_exo_world_together_reprojection_debug/overlays/reprojection_0051_input_000501.jpg"
+    },
+    {
+      "sampled_vertices": 575.0,
+      "vertex_positive_depth_fraction": 1.0,
+      "vertex_in_image_fraction": 0.7426086956521739,
+      "joint_positive_depth_fraction": 1.0,
+      "joint_in_image_fraction": 0.6666666666666666,
+      "bbox_u_min": 0.60308837890625,
+      "bbox_v_min": 9.63250732421875,
+      "bbox_u_max": 670.1065673828125,
+      "bbox_v_max": 1075.4835205078125,
+      "rel_index": 76,
+      "input_index": 526,
+      "frame_id": 2297,
+      "image_path": "/public/home/wenxin/egobody/egocentric_color/recording_20210907_S04_S03_02/2021-09-07-171131/PV/132755011519606922_frame_02297.jpg",
+      "output_path": "/public/home/wenxin/egoallo/egoallo_egobody_trajectories/recording_20210907_S04_S03_02/gvhmr_exo/recording_20210907_S04_S03_02_000450_000578_try1_exo_world_together_reprojection_debug/overlays/reprojection_0076_input_000526.jpg"
+    },
+    {
+      "sampled_vertices": 575.0,
+      "vertex_positive_depth_fraction": 1.0,
+      "vertex_in_image_fraction": 0.9930434782608696,
+      "joint_positive_depth_fraction": 1.0,
+      "joint_in_image_fraction": 1.0,
+      "bbox_u_min": 320.169189453125,
+      "bbox_v_min": 2.714935302734375,
+      "bbox_u_max": 874.2763671875,
+      "bbox_v_max": 1061.78564453125,
+      "rel_index": 102,
+      "input_index": 552,
+      "frame_id": 2331,
+      "image_path": "/public/home/wenxin/egobody/egocentric_color/recording_20210907_S04_S03_02/2021-09-07-171131/PV/132755011530935604_frame_02331.jpg",
+      "output_path": "/public/home/wenxin/egoallo/egoallo_egobody_trajectories/recording_20210907_S04_S03_02/gvhmr_exo/recording_20210907_S04_S03_02_000450_000578_try1_exo_world_together_reprojection_debug/overlays/reprojection_0102_input_000552.jpg"
+    },
+    {
+      "sampled_vertices": 575.0,
+      "vertex_positive_depth_fraction": 1.0,
+      "vertex_in_image_fraction": 0.9443478260869566,
+      "joint_positive_depth_fraction": 1.0,
+      "joint_in_image_fraction": 0.875,
+      "bbox_u_min": 745.8623046875,
+      "bbox_v_min": 109.82403564453125,
+      "bbox_u_max": 1054.6927490234375,
+      "bbox_v_max": 1079.2061767578125,
+      "rel_index": 127,
+      "input_index": 577,
+      "frame_id": 2358,
+      "image_path": "/public/home/wenxin/egobody/egocentric_color/recording_20210907_S04_S03_02/2021-09-07-171131/PV/132755011539931911_frame_02358.jpg",
+      "output_path": "/public/home/wenxin/egoallo/egoallo_egobody_trajectories/recording_20210907_S04_S03_02/gvhmr_exo/recording_20210907_S04_S03_02_000450_000578_try1_exo_world_together_reprojection_debug/overlays/reprojection_0127_input_000577.jpg"
+    }
+  ],
+  "overlay_vertex_positive_depth_fraction_mean": 1.0,
+  "overlay_vertex_in_image_fraction_mean": 0.8930434782608696,
+  "overlay_joint_positive_depth_fraction_mean": 1.0,
+  "overlay_joint_in_image_fraction_mean": 0.8402777777777777
+}
